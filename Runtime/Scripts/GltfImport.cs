@@ -169,6 +169,7 @@ namespace GLTFast
             ExtensionName.MeshGPUInstancing,
             ExtensionName.LightsPunctual,
             ExtensionName.MaterialsClearcoat,
+            ExtensionName.CesiumRtc,
         };
 
         static IDeferAgent s_DefaultDeferAgent;
@@ -4026,6 +4027,24 @@ namespace GLTFast
             else
             {
                 texture.LoadImage(data, forceSampleLinear);
+            }
+        }
+
+        public double3? RtcCenter  
+        {
+            get
+            {
+                if (Root != null
+                    && Root.Extensions != null
+                    && Root.Extensions.CESIUM_RTC != null
+                    && Root.Extensions.CESIUM_RTC.center != null
+                    && Root.Extensions.CESIUM_RTC.center.Length == 3)
+                {
+                    var center = Root.Extensions.CESIUM_RTC.center;
+                    return new double3(-center[0], center[2], -center[1]);
+                }
+
+                return null;
             }
         }
     }

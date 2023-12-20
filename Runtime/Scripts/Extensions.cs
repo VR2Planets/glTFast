@@ -100,7 +100,11 @@ namespace GLTFast
         /// <a href="https://github.com/KhronosGroup/glTF/tree/main/extensions/2.0/Khronos/KHR_materials_clearcoat">KHR_materials_clearcoat</a> glTF extension
         /// </summary>
         public const string MaterialsClearcoat = "KHR_materials_clearcoat";
-
+        /// <summary>
+        /// <a href="https://github.com/KhronosGroup/glTF/blob/main/extensions/1.0/Vendor/CESIUM_RTC/README.md">CESIUM_RTC</a> CESIUM_RTC extension
+        /// </summary>
+        public const string CesiumRtc = "CESIUM_RTC";
+        
         /// <summary>
         /// Returns the official name of the glTF extension
         /// </summary>

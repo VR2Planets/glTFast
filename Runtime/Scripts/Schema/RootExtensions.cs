@@ -15,6 +15,8 @@ namespace GLTFast.Schema
         // ReSharper disable once InconsistentNaming
         public LightsPunctual KHR_lights_punctual;
 
+        public CesiumRtc CESIUM_RTC;
+            
         internal void GltfSerialize(JsonWriter writer)
         {
             writer.AddObject();
@@ -37,7 +39,7 @@ namespace GLTFast.Schema
                 KHR_lights_punctual = null;
             }
 
-            return KHR_lights_punctual != null;
+            return KHR_lights_punctual != null || CESIUM_RTC != null;
         }
     }
 }
