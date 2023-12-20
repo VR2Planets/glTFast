@@ -44,7 +44,7 @@ using UnityEngine.Assertions;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using UnityEngine;
-
+using Vizario;
 using Debug = UnityEngine.Debug;
 
 [assembly: InternalsVisibleTo("glTFast.Editor")]
@@ -1344,7 +1344,7 @@ namespace GLTFast
             // TODO: Investigate alternative: native texture creation in worker thread
             bool forceSampleLinear = m_ImageGamma != null && !m_ImageGamma[imageIndex];
             var txt = CreateEmptyTexture(img, imageIndex, forceSampleLinear);
-            txt.LoadImage(data,!m_ImageReadable[imageIndex]);
+            await LoadImage(txt, data,!m_ImageReadable[imageIndex]);
             m_Images[imageIndex] = txt;
             Profiler.EndSample();
         }
@@ -1418,7 +1418,7 @@ namespace GLTFast
                         var forceSampleLinear = m_ImageGamma!=null && !m_ImageGamma[imageIndex];
                         txt = CreateEmptyTexture(Root.Images[imageIndex], imageIndex, forceSampleLinear);
                         // TODO: Investigate for NativeArray variant to avoid `www.data`
-                        txt.LoadImage(www.Data,!m_ImageReadable[imageIndex]);
+                        await LoadImage(txt, www.Data, !m_ImageReadable[imageIndex]);
 #else
                         m_Logger?.Warning(LogCode.ImageConversionNotEnabled);
                         txt = null;
@@ -1893,7 +1893,7 @@ namespace GLTFast
                         {
                             jh.jobHandle.Complete();
 #if UNITY_IMAGECONVERSION
-                            m_Images[jh.imageIndex].LoadImage(jh.buffer,!m_ImageReadable[jh.imageIndex]);
+                            await LoadImage(m_Images[jh.imageIndex], jh.buffer,!m_ImageReadable[jh.imageIndex]);
 #endif
                             jh.gcHandle.Free();
                             m_ImageCreateContexts.RemoveAt(i);
@@ -3977,5 +3977,56 @@ namespace GLTFast
         /// </summary>
         static bool IsEditorImport => !EditorApplication.isPlaying;
 #endif // UNITY_EDITOR
+        
+        private async Task LoadImage(Texture2D texture, byte[] data, bool forceSampleLinear)
+        {
+            //jpeg
+            if (data[0] == 0xff && data[1] == 0xd8)
+            {
+                int width = 1, height = 1;
+                byte[] textureData = null;
+                
+                await Task.Run(() =>
+                {
+                    //Turbo
+                    var decompressionProperties = new TurboJPEGLib.DecompressionProperties();
+                    decompressionProperties.DesiredOutputColorSpace = TurboJPEGLib.COLORSPACE.TJPF_ARGB;
+
+                    var result = TurboJPEGLib.TurboJPEG_decompress(data,
+                        out width,
+                        out height,
+                        decompressionProperties);
+
+                    textureData = new byte[result.Length];
+
+                    int targetDstOffset = 0;
+                    for (int py = 0; py < height; py++)
+                    {
+                        for (int px = 0; px < width; px++)
+                        {
+                            int resultOffset = (((height - py - 1) * width) + px) * 4;
+
+                            textureData[targetDstOffset++] = result[resultOffset];
+                            textureData[targetDstOffset++] = result[resultOffset + 1];
+                            textureData[targetDstOffset++] = result[resultOffset + 2];
+                            textureData[targetDstOffset++] = result[resultOffset + 3];
+                        }
+                    }
+                });
+
+                if (textureData != null)
+                {
+                    texture.Reinitialize(width, height, TextureFormat.ARGB32, true);
+                    texture.SetPixelData<byte>(textureData, 0);
+                    texture.Apply(true);
+
+                    await Task.Yield();
+                }
+            }
+            else
+            {
+                texture.LoadImage(data, forceSampleLinear);
+            }
+        }
     }
 }
