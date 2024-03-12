@@ -4,15 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.2.0] - 2024-01-29
+
+### Added
+- Deprecated soft-dependency packages are detected and a warning with upgrade instructions is shown in the console.
+
+### Changed
+- Support for Draco 3D Data Compression is now provided by [*Draco for Unity* (com.unity.cloud.draco)][DracoForUnity], which is a fork of and replaces [*DracoUnity* (com.atteneder.draco)][DracoUnity].
+
+### Fixed
+- Compiler error when Newtonsoft JSON package was not installed.
+- All Draco vertex attributes are assigned by identifier instead of type. As a result, tangents are now decoded properly instead of recalculated.
+- Compilation error when scripting define `GLTFAST_BUILTIN_SHADER_GRAPH` is set.
+- `GltfImport.IsTextureYFlipped` returns correct result for non-KTX textures.
+
+## [6.1.0] - 2024-01-17
+
+### Added
+- (Documentation) Explanation and user case for the add-on API
+- `GltfImport.IsTextureYFlipped` to support non-default texture orientations
 
 ### Changed
 - Documentation improvements
+- Auto-formatted all markdown, USS, UXML and shader code
+- CI maintenance
+
+### Fixed
+- Updated references to *KTX for Unity*
 
 ## [6.0.1] - 2023-10-11
 
 ### Fixed
 - Compilation error when Animation module is disabled and Newtonsoft JSON package installed.
+- Compilation on Unity 2020 LTS
 
 ## [6.0.0] - 2023-10-04
 
@@ -496,7 +520,7 @@ This release contains multiple breaking changes. Please read the [upgrade guide]
 ## [4.3.4] - 2021-10-26
 
 ### Added
-- Option to turn off Editor import by adding `GLTFAST_EDITOR_IMPORT_OFF` to the project's *Scripting Define Symbols* in the *Player Settings* (#256)  
+- Option to turn off Editor import by adding `GLTFAST_EDITOR_IMPORT_OFF` to the project's *Scripting Define Symbols* in the *Player Settings* (#256)
 
 ### Fixed
 - Import of glTFs with no meshes (#257)
@@ -682,7 +706,7 @@ This release contains multiple breaking changes. Please read the [upgrade guide]
 - Support for unsigned byte joint indices
 
 ### Changed
-- Accelerated loading meshes by obtaining and setting bounds from accessors min/max values instead of recalculating them  
+- Accelerated loading meshes by obtaining and setting bounds from accessors min/max values instead of recalculating them
 - Improved log message when DracoUnity/KtxUnity packages are missing
 - Restored/simplified `GLTFast.LoadGltfBinary`, allowing users to load glTF binary files from byte arrays directly (also added documentation; fixes #148)
 
@@ -1052,6 +1076,7 @@ This release contains multiple breaking changes. Please read the [upgrade guide]
 [Entities1.0]: https://docs.unity3d.com/Packages/com.unity.entities@1.0
 [KtxUnity]: https://github.com/atteneder/KtxUnity
 [DanDovi]: https://github.com/DanDovi
+[DracoForUnity]: https://docs.unity3d.com/Packages/com.unity.cloud.draco@latest
 [DracoUnity]: https://github.com/atteneder/DracoUnity
 [aurorahcx]: https://github.com/aurorahcx
 [Battlehub0x]: https://github.com/Battlehub0x
