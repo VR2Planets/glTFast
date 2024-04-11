@@ -45,6 +45,7 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using UnityEngine;
 using Vizario;
+using Vr2Planets.Common.WebP;
 using Debug = UnityEngine.Debug;
 
 namespace GLTFast
@@ -3936,6 +3937,8 @@ namespace GLTFast
                 case "ktx":
                 case "ktx2":
                     return ImageFormat.Ktx;
+                case "webp":
+                    return ImageFormat.Webp;
                 default:
                     return ImageFormat.Unknown;
             }
@@ -4015,6 +4018,45 @@ namespace GLTFast
                         out width,
                         out height,
                         decompressionProperties);
+
+                    textureData = new byte[result.Length];
+
+                    int targetDstOffset = 0;
+                    for (int py = 0; py < height; py++)
+                    {
+                        for (int px = 0; px < width; px++)
+                        {
+                            int resultOffset = (((height - py - 1) * width) + px) * 4;
+
+                            textureData[targetDstOffset++] = result[resultOffset];
+                            textureData[targetDstOffset++] = result[resultOffset + 1];
+                            textureData[targetDstOffset++] = result[resultOffset + 2];
+                            textureData[targetDstOffset++] = result[resultOffset + 3];
+                        }
+                    }
+                });
+
+                if (textureData != null)
+                {
+                    texture.Reinitialize(width, height, TextureFormat.ARGB32, true);
+                    texture.SetPixelData<byte>(textureData, 0);
+                    texture.Apply(true);
+
+                    await Task.Yield();
+                }
+            }
+            else if (data.Length > 12 
+                     && data[0] == 0x52 && data[1] == 0x49 && data[2] == 0x46 && data[3] == 0x46
+                     && data[8] == 0x57 && data[9] == 0x45 && data[10] == 0x42 && data[11] == 0x50)
+            {
+                int width = 1, height = 1;
+                byte[] textureData = null;
+                
+                await Task.Run(() =>
+                {
+                    var result = WebPLib.DecompressARGB(data,
+                        out width,
+                        out height);
 
                     textureData = new byte[result.Length];
 

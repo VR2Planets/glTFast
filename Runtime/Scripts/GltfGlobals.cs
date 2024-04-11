@@ -11,7 +11,8 @@ namespace GLTFast
         Unknown,
         PNG,
         Jpeg,
-        Ktx
+        Ktx,
+        Webp
     }
 
     enum ChunkFormat : uint
