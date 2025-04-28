@@ -4006,7 +4006,7 @@ namespace GLTFast
             if (data[0] == 0xff && data[1] == 0xd8)
             {
                 int width = 1, height = 1;
-                byte[] textureData = null;
+                NativeArray<byte>? textureDataHolder = null;
                 
                 await Task.Run(() =>
                 {
@@ -4019,7 +4019,8 @@ namespace GLTFast
                         out height,
                         decompressionProperties);
 
-                    textureData = new byte[result.Length];
+                    var textureData = new NativeArray<byte>(result.Length, Allocator.Persistent);
+                    textureDataHolder = textureData;
 
                     int targetDstOffset = 0;
                     for (int py = 0; py < height; py++)
@@ -4036,16 +4037,18 @@ namespace GLTFast
                     }
                 });
 
-                if (textureData != null)
+                if (textureDataHolder != null)
                 {
-                    texture.Reinitialize(width, height, TextureFormat.ARGB32, true);
+                    texture.Reinitialize(width, height, TextureFormat.ARGB32, false);
                     await Task.Yield();
                     
-                    texture.SetPixelData<byte>(textureData, 0);
+                    texture.SetPixelData<byte>(textureDataHolder.Value, 0);
                     await Task.Yield();
                     
-                    texture.Apply(true);
+                    texture.Apply(false);
                     await Task.Yield();
+
+                    textureDataHolder?.Dispose();
                 }
             }
             else if (data.Length > 12 
@@ -4053,7 +4056,7 @@ namespace GLTFast
                      && data[8] == 0x57 && data[9] == 0x45 && data[10] == 0x42 && data[11] == 0x50)
             {
                 int width = 1, height = 1;
-                byte[] textureData = null;
+                NativeArray<byte>? textureDataHolder = null;
                 
                 await Task.Run(() =>
                 {
@@ -4061,7 +4064,8 @@ namespace GLTFast
                         out width,
                         out height);
 
-                    textureData = new byte[result.Length];
+                    var textureData = new NativeArray<byte>(result.Length, Allocator.Persistent);
+                    textureDataHolder = textureData;
 
                     int targetDstOffset = 0;
                     for (int py = 0; py < height; py++)
@@ -4078,16 +4082,18 @@ namespace GLTFast
                     }
                 });
 
-                if (textureData != null)
+                if (textureDataHolder != null)
                 {
-                    texture.Reinitialize(width, height, TextureFormat.ARGB32, true);
+                    texture.Reinitialize(width, height, TextureFormat.ARGB32, false);
                     await Task.Yield();
                     
-                    texture.SetPixelData<byte>(textureData, 0);
+                    texture.SetPixelData<byte>(textureDataHolder.Value, 0);
                     await Task.Yield();
                     
-                    texture.Apply(true);
+                    texture.Apply(false);
                     await Task.Yield();
+
+                    textureDataHolder?.Dispose();
                 }
             }
             else
