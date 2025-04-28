@@ -4039,9 +4039,12 @@ namespace GLTFast
                 if (textureData != null)
                 {
                     texture.Reinitialize(width, height, TextureFormat.ARGB32, true);
+                    await Task.Yield();
+                    
                     texture.SetPixelData<byte>(textureData, 0);
+                    await Task.Yield();
+                    
                     texture.Apply(true);
-
                     await Task.Yield();
                 }
             }
@@ -4078,9 +4081,12 @@ namespace GLTFast
                 if (textureData != null)
                 {
                     texture.Reinitialize(width, height, TextureFormat.ARGB32, true);
+                    await Task.Yield();
+                    
                     texture.SetPixelData<byte>(textureData, 0);
+                    await Task.Yield();
+                    
                     texture.Apply(true);
-
                     await Task.Yield();
                 }
             }
