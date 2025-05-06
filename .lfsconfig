@@ -1,2 +1,2 @@
 [lfs]
-fetchexclude = Documentation~/,Editor/
+fetchexclude = Documentation~/,Editor/,*.png
