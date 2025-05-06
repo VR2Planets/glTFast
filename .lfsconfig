@@ -1,1 +1,1 @@
-fetchexclude = Documentation~/,Editor/
+lfs.fetchexclude = Documentation~/,Editor/
